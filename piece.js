@@ -33,4 +33,10 @@ class Piece {
             });
         });
     }
+
+    move(piece) {
+        this.x = piece.x;
+        this.y = piece.y;
+        this.shape = piece.shape;
+    }
 }
