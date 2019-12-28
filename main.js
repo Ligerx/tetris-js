@@ -7,3 +7,10 @@ ctx.canvas.height = ROWS * BLOCK_SIZE;
 
 // Scale the blocks so they have a size of 1
 ctx.scale(BLOCK_SIZE, BLOCK_SIZE)
+
+let board = new Board();
+
+function play() {
+    board.reset();
+    console.table(board.grid);
+}
