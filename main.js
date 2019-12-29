@@ -42,13 +42,24 @@ function addEventListener() {
     });
 }
 
-function animate() {
+const time = { start: 0, elapsed: 0, level: 1000};
+let requestId;
+
+function animate(now = 0) {
+    time.elapsed = now - time.start;
+
+    if (time.elapsed > time.level) {
+        time.start = now;
+        board.drop();
+    }
+    // TODO: Levels and points
+
     // Clear board before drawing new state.
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
     board.draw();
 
-    requestAnimationFrame(animate);
+    requestId = requestAnimationFrame(animate);
 }
 
 function play() {
@@ -58,7 +69,7 @@ function play() {
     piece.draw();
     board.piece = piece;
 
-    // animate();
+    animate();
 
     addEventListener();
 }

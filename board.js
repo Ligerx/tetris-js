@@ -55,6 +55,19 @@ class Board {
         return newPiece;
     }
 
+    drop() {
+        let p = moves[KEY.DOWN](this.piece);
+
+        if (this.valid(p)) {
+            this.piece.move(p);
+        }
+        else {
+            // this.freeze();
+            // this.clearLines();
+            // ...
+        }
+    }
+
     draw() {
         this.grid.forEach((row, y) => {
             row.forEach((value, x) => {
