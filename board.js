@@ -54,4 +54,13 @@ class Board {
         newPiece.shape.forEach(row => row.reverse());
         return newPiece;
     }
+
+    draw() {
+        this.grid.forEach((row, y) => {
+            row.forEach((value, x) => {
+                this.ctx.fillStyle = COLORS[value];
+                this.ctx.fillRect(x, y, 1, 1);
+            });
+        });
+    }
 }

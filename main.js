@@ -42,12 +42,23 @@ function addEventListener() {
     });
 }
 
+function animate() {
+    // Clear board before drawing new state.
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+    board.draw();
+
+    requestAnimationFrame(animate);
+}
+
 function play() {
     board.reset();
 
     let piece = new Piece(ctx);
     piece.draw();
     board.piece = piece;
+
+    // animate();
 
     addEventListener();
 }
