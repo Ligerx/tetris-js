@@ -8,6 +8,7 @@ class Board {
     }
 
     // Generate a matrix filled with zeros
+    // arranged by [y][x]
     getEmptyBoard() {
         return Array.from({length: ROWS}, () => Array(COLS).fill(0));
     }
@@ -17,22 +18,24 @@ class Board {
             return row.every((value, dx) => {
                 let x = piece.x + dx;
                 let y = piece.y + dy;
+
                 return (
-                    this.isEmpty(value) || (this.isInsideWalls(x) && this.isAboveFloor(y))
+                    value === 0 || 
+                    (this.isNotOccupied(x, y) && this.isInsideWalls(x) && this.isAboveFloor(y))
                 );
             });
         });
     }
 
-    isEmpty(value) {
-        return true;
+    isNotOccupied(x, y) {
+        return this.grid[y][x] === 0;
     }
 
     isInsideWalls(x) {
-        return true;
+        return x >= 0 && x < COLS;
     }
 
     isAboveFloor(y) {
-        return true;
+        return y < ROWS;
     }
 }
