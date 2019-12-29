@@ -44,6 +44,14 @@ class Piece {
     //     this.shape = piece.shape;
     // }
 
+    moveLeft() {
+        this.x = this.x - 1;
+    }
+
+    moveRight() {
+        this.x = this.x + 1;
+    }
+
     rotate() {
         // Deep clone the shape so we can mutate the 2d array
         let newShape = JSON.parse(JSON.stringify(piece));
@@ -60,6 +68,11 @@ class Piece {
 
         this.shape = newShape;
     }
+
+    drop() {
+        this.y = this.y + 1;
+    }
+    // hard dropping is equivalent to multiple normal drops
 }
 
 function _randomizeTetronimoType(numTypes) {
