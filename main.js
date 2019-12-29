@@ -9,20 +9,20 @@ ctx.canvas.height = ROWS * BLOCK_SIZE;
 ctx.scale(BLOCK_SIZE, BLOCK_SIZE)
 
 function play() {
-    const moves = {
-        [KEY.LEFT]: piece => ({ ...piece, x: piece.x - 1 }),
-        [KEY.RIGHT]: piece => ({ ...piece, x: piece.x + 1 }),
-        [KEY.DOWN]: piece => ({ ...piece, y: piece.y + 1 }),
-        [KEY.UP]: piece => board.rotate(piece),
-        [KEY.SPACE]: piece => ({ ...piece, y: piece.y + 1 })
-    }
-    
     const board = new Board();
     board.reset();
 
     let piece = new Piece(ctx);
     piece.draw();
     board.piece = piece;
+
+    const moves = {
+        [KEY.LEFT]: piece => ({ ...piece, x: piece.x - 1 }),
+        [KEY.RIGHT]: piece => ({ ...piece, x: piece.x + 1 }),
+        [KEY.DOWN]: piece => ({ ...piece, y: piece.y + 1 }),
+        [KEY.UP]: piece => board.rotate(piece), // relies on board being initialized beforehand
+        [KEY.SPACE]: piece => ({ ...piece, y: piece.y + 1 })
+    }
 
     document.addEventListener('keydown', event => {
         if (moves[event.keyCode]) {
