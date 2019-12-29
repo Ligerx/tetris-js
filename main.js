@@ -18,6 +18,32 @@ const moves = {
     [KEY.SPACE]: piece => ({ ...piece, y: piece.y + 1 })
 }
 
+function validPosition(piece, board) {
+    return piece.shape.every((row, dy) => {
+        return row.every((value, dx) => {
+            let x = piece.x + dx;
+            let y = piece.y + dy;
+
+            return (
+                value === 0 || 
+                (_isInsideWalls(x) && _isAboveFloor(y) && _isNotOccupied(board.grid[y][x]))
+            );
+        });
+    });
+}
+
+function _isNotOccupied(cellValue) {
+    return cellValue === 0;
+}
+
+function _isInsideWalls(x) {
+    return x >= 0 && x < COLS;
+}
+
+function _isAboveFloor(y) {
+    return y < ROWS;
+}
+
 function addEventListener() {
     document.addEventListener('keydown', event => {
         if (moves[event.keyCode]) {

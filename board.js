@@ -10,20 +10,6 @@ class Board {
         this.grid = Array.from({length: ROWS}, () => Array(COLS).fill(0));
     }
 
-    valid(piece) {
-        return piece.shape.every((row, dy) => {
-            return row.every((value, dx) => {
-                let x = piece.x + dx;
-                let y = piece.y + dy;
-
-                return (
-                    value === 0 || 
-                    (_isInsideWalls(x) && _isAboveFloor(y) && _isNotOccupied(this.grid[y][x]))
-                );
-            });
-        });
-    }
-
     // drop() {
     //     let p = moves[KEY.DOWN](this.piece);
 
@@ -45,16 +31,4 @@ class Board {
     //         });
     //     });
     // }
-}
-
-function _isNotOccupied(cellValue) {
-    return cellValue === 0;
-}
-
-function _isInsideWalls(x) {
-    return x >= 0 && x < COLS;
-}
-
-function _isAboveFloor(y) {
-    return y < ROWS;
 }
