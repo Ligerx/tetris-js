@@ -57,7 +57,7 @@ function addEventListener() {
         const key = KEY[event.keyCode];
         const actionCode = KEY_ACTION_DICTIONARY[key];
 
-        if (actionCode !== null) {
+        if (actionCode != null) {
             event.preventDefault();
 
             // Passing in board to all functions even if they don't need it to simplify code
@@ -83,9 +83,9 @@ function draw(piece, board, ctx) {
     });
 
     // Draw piece
-    ctx.fillStyle = piece.color;
     piece.shape.forEach((row, y) => {
         row.forEach((value, x) => {
+            ctx.fillStyle = COLORS[value];
             ctx.fillRect(piece.x + x, piece.y + y, 1, 1);
         });
     });
@@ -99,16 +99,13 @@ function animate(now = 0) {
 
     // TODO check valid move
     // TODO commit the piece and generate new piece once it touches the bottom
-    piece.drop();
+    // piece.drop();
 
     // if (time.elapsed > time.level) {
     //     time.start = now;
     //     board.drop();
     // }
     // TODO: Levels and points
-
-    console.table(board.grid);
-    console.table(piece.shape);
 
     draw(piece, board, ctx);
 
@@ -119,5 +116,6 @@ function play() {
     board.reset();
     piece = new Piece();
     addEventListener();
-    animate();
+    // animate();
+    draw(piece, board, ctx);
 }
