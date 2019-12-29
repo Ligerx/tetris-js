@@ -6,29 +6,24 @@ ctx.canvas.width = COLS * BLOCK_SIZE;
 ctx.canvas.height = ROWS * BLOCK_SIZE;
 
 // Scale the blocks so they have a size of 1
-ctx.scale(BLOCK_SIZE, BLOCK_SIZE)
+ctx.scale(BLOCK_SIZE, BLOCK_SIZE);
 
-function play() {
-    const board = new Board();
-    board.reset();
+const board = new Board();
 
-    let piece = new Piece(ctx);
-    piece.draw();
-    board.piece = piece;
+const moves = {
+    [KEY.LEFT]: piece => ({ ...piece, x: piece.x - 1 }),
+    [KEY.RIGHT]: piece => ({ ...piece, x: piece.x + 1 }),
+    [KEY.DOWN]: piece => ({ ...piece, y: piece.y + 1 }),
+    [KEY.UP]: piece => board.rotate(piece), // relies on board being initialized beforehand
+    [KEY.SPACE]: piece => ({ ...piece, y: piece.y + 1 })
+}
 
-    const moves = {
-        [KEY.LEFT]: piece => ({ ...piece, x: piece.x - 1 }),
-        [KEY.RIGHT]: piece => ({ ...piece, x: piece.x + 1 }),
-        [KEY.DOWN]: piece => ({ ...piece, y: piece.y + 1 }),
-        [KEY.UP]: piece => board.rotate(piece), // relies on board being initialized beforehand
-        [KEY.SPACE]: piece => ({ ...piece, y: piece.y + 1 })
-    }
-
+function addEventListener() {
     document.addEventListener('keydown', event => {
         if (moves[event.keyCode]) {
             event.preventDefault();
             let piece = moves[event.keyCode](board.piece);
-
+    
             if (event.keyCode === KEY.SPACE) {
                 // Hard drop
                 while (board.valid(piece)) {
@@ -45,4 +40,14 @@ function play() {
             }
         }
     });
+}
+
+function play() {
+    board.reset();
+
+    let piece = new Piece(ctx);
+    piece.draw();
+    board.piece = piece;
+
+    addEventListener();
 }
