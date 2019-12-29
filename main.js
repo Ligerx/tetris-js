@@ -9,20 +9,21 @@ ctx.canvas.height = ROWS * BLOCK_SIZE;
 ctx.scale(BLOCK_SIZE, BLOCK_SIZE);
 
 const board = new Board();
+let piece;
 
-const keyActionDictionary = {
-    [KEY.LEFT]: ACTIONS.LEFT,
-    [KEY.RIGHT]: ACTIONS.RIGHT,
-    [KEY.DOWN]: ACTIONS.DROP,
-    [KEY.UP]: ACTIONS.ROTATE,
-    [KEY.SPACE]: ACTIONS.HARD_DROP
-}
+// Generate a new piece to check for a valid position before replacing the existing piece
 const actions = {
     [ACTIONS.LEFT]: piece => piece.clone().moveLeft(),
     [ACTIONS.RIGHT]: piece => piece.clone().moveRight(),
-    [ACTIONS.DROP]: piece.clone().drop(),
+    [ACTIONS.DROP]: piece => piece.clone().drop(),
     [ACTIONS.ROTATE]: piece => piece.clone().rotate(),
-    [ACTIONS.HARD_DROP]: piece => ({ ...piece, y: piece.y + 1 }) // TODO UPDATE
+    [ACTIONS.HARD_DROP]: (piece, board) => {
+        const newPiece = piece.clone();
+        while(validPosition(newPiece, board)) {
+            newPiece.drop();
+        }
+        return newPiece;
+    }
 }
 
 function validPosition(piece, board) {
@@ -53,25 +54,40 @@ function _isAboveFloor(y) {
 
 function addEventListener() {
     document.addEventListener('keydown', event => {
-        if (moves[event.keyCode]) {
+        const key = KEY[event.keyCode];
+        const actionCode = KEY_ACTION_DICTIONARY[key];
+
+        if (actionCode !== null) {
             event.preventDefault();
-            let piece = moves[event.keyCode](board.piece);
-    
-            if (event.keyCode === KEY.SPACE) {
-                // Hard drop
-                while (board.valid(piece)) {
-                    board.piece.move(piece);
-                    piece = moves[KEY.DOWN](board.piece);
-                }
-                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-                board.piece.draw();
-            }
-            else if (board.valid(piece)) {
-                board.piece.move(piece);
-                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-                board.piece.draw();
+
+            // Passing in board to all functions even if they don't need it to simplify code
+            const newPiece = actions[actionCode](piece, board);
+
+            if (validPosition(piece, board)) {
+                piece = newPiece;
             }
         }
+    });
+}
+
+function draw(piece, board, ctx) {
+    // Clear board before drawing new state
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+    // Draw board
+    board.grid.forEach((row, y) => {
+        row.forEach((value, x) => {
+            ctx.fillStyle = COLORS[value];
+            ctx.fillRect(x, y, 1, 1);
+        });
+    });
+
+    // Draw piece
+    ctx.fillStyle = piece.color;
+    piece.shape.forEach((row, y) => {
+        row.forEach((value, x) => {
+            ctx.fillRect(piece.x + x, piece.y + y, 1, 1);
+        });
     });
 }
 
@@ -81,28 +97,27 @@ let requestId;
 function animate(now = 0) {
     time.elapsed = now - time.start;
 
-    if (time.elapsed > time.level) {
-        time.start = now;
-        board.drop();
-    }
+    // TODO check valid move
+    // TODO commit the piece and generate new piece once it touches the bottom
+    piece.drop();
+
+    // if (time.elapsed > time.level) {
+    //     time.start = now;
+    //     board.drop();
+    // }
     // TODO: Levels and points
 
-    // Clear board before drawing new state.
-    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    console.table(board.grid);
+    console.table(piece.shape);
 
-    board.draw();
+    draw(piece, board, ctx);
 
     requestId = requestAnimationFrame(animate);
 }
 
 function play() {
     board.reset();
-
-    let piece = new Piece(ctx);
-    piece.draw();
-    board.piece = piece;
-
-    animate();
-
+    piece = new Piece();
     addEventListener();
+    animate();
 }
