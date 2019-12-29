@@ -3,7 +3,7 @@ const ROWS = 20;
 const BLOCK_SIZE = 30;
 
 const COLORS = [
-    'none',
+    'white', // empty, none
     'cyan',
     'blue',
     'orange',
