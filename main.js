@@ -13,7 +13,6 @@ function play() {
         [KEY.LEFT]: piece => ({ ...piece, x: piece.x - 1 }),
         [KEY.RIGHT]: piece => ({ ...piece, x: piece.x + 1 }),
         [KEY.DOWN]: piece => ({ ...piece, y: piece.y + 1 }),
-        // TODO: make this hard drop immediately drop down as far as possible
         [KEY.SPACE]: piece => ({ ...piece, y: piece.y + 1 })
     }
     
@@ -29,7 +28,16 @@ function play() {
             event.preventDefault();
             let piece = moves[event.keyCode](board.piece);
 
-            if (board.valid(piece)) {
+            if (event.keyCode === KEY.SPACE) {
+                // Hard drop
+                while (board.valid(piece)) {
+                    board.piece.move(piece);
+                    piece = moves[KEY.DOWN](board.piece);
+                    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                    board.piece.draw();
+                }
+            }
+            else if (board.valid(piece)) {
                 board.piece.move(piece);
                 ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
                 board.piece.draw();

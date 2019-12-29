@@ -21,7 +21,7 @@ class Board {
 
                 return (
                     value === 0 || 
-                    (this.isNotOccupied(x, y) && this.isInsideWalls(x) && this.isAboveFloor(y))
+                    (this.isInsideWalls(x) && this.isAboveFloor(y) && this.isNotOccupied(x, y))
                 );
             });
         });
