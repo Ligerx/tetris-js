@@ -1,13 +1,13 @@
 class Piece {
-    x; // mutate directly to move
-    y; // mutate directly to move
+    x;
+    y;
     color;
     shape;
 
     constructor(piece) {
         // Optional constructor param to create a copy of an existing piece
         // Probably use clone() to be explicit when creating a copied class instance
-        if (piece !== null) {
+        if (piece != null) {
             this.x = piece.x;
             this.y = piece.y;
             this.color = piece.color;
@@ -27,29 +27,15 @@ class Piece {
         return new Piece(this);
     }
 
-    // draw() {
-    //     this.ctx.fillStyle = this.color;
-    //     this.shape.forEach((row, y) => {
-    //         row.forEach((value, x) => {
-    //             if (value > 0) {
-    //                 this.ctx.fillRect(this.x + x, this.y + y, 1, 1);
-    //             }
-    //         });
-    //     });
-    // }
-
-    // move(piece) {
-    //     this.x = piece.x;
-    //     this.y = piece.y;
-    //     this.shape = piece.shape;
-    // }
-
+    // NOTE: these movement functions return this instance to make chaining more convenient
     moveLeft() {
         this.x = this.x - 1;
+        return this;
     }
 
     moveRight() {
         this.x = this.x + 1;
+        return this;
     }
 
     rotate() {
@@ -67,10 +53,12 @@ class Piece {
         newShape.forEach(row => row.reverse());
 
         this.shape = newShape;
+        return this;
     }
 
     drop() {
         this.y = this.y + 1;
+        return this;
     }
     // hard dropping is equivalent to multiple normal drops
 }
