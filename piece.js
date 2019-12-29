@@ -64,5 +64,7 @@ class Piece {
 }
 
 function _randomizeTetronimoType(numTypes) {
-    return Math.floor(Math.random() * numTypes);
+    // hacky fix
+    // the 0th index of the COLORS and SHAPES arrays are empty, so we need to skip it 
+    return Math.floor(Math.random() * (numTypes - 1)) + 1;
 }
