@@ -10,12 +10,19 @@ ctx.scale(BLOCK_SIZE, BLOCK_SIZE);
 
 const board = new Board();
 
-const moves = {
-    [KEY.LEFT]: piece => ({ ...piece, x: piece.x - 1 }),
-    [KEY.RIGHT]: piece => ({ ...piece, x: piece.x + 1 }),
-    [KEY.DOWN]: piece => ({ ...piece, y: piece.y + 1 }),
-    [KEY.UP]: piece => board.rotate(piece), // relies on board being initialized beforehand
-    [KEY.SPACE]: piece => ({ ...piece, y: piece.y + 1 })
+const keyActionDictionary = {
+    [KEY.LEFT]: ACTIONS.LEFT,
+    [KEY.RIGHT]: ACTIONS.RIGHT,
+    [KEY.DOWN]: ACTIONS.DROP,
+    [KEY.UP]: ACTIONS.ROTATE,
+    [KEY.SPACE]: ACTIONS.HARD_DROP
+}
+const actions = {
+    [ACTIONS.LEFT]: piece => piece.clone().moveLeft(),
+    [ACTIONS.RIGHT]: piece => piece.clone().moveRight(),
+    [ACTIONS.DROP]: piece.clone().drop(),
+    [ACTIONS.ROTATE]: piece => piece.clone().rotate(),
+    [ACTIONS.HARD_DROP]: piece => ({ ...piece, y: piece.y + 1 }) // TODO UPDATE
 }
 
 function validPosition(piece, board) {

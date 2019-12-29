@@ -34,3 +34,12 @@ const KEY = {
     SPACE: 32
 }
 Object.freeze(KEY);
+
+const ACTIONS = {
+    LEFT: 'LEFT',
+    RIGHT: 'RIGHT',
+    ROTATE: 'ROTATE',
+    DROP: 'DROP',
+    HARD_DROP: 'HARD_DROP',
+};
+Object.freeze(ACTIONS);
