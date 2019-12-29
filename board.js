@@ -38,4 +38,20 @@ class Board {
     isAboveFloor(y) {
         return y < ROWS;
     }
+
+    rotate(piece) {
+        // Deep clone the piece to copy it's 2d shape array correctly
+        let newPiece = JSON.parse(JSON.stringify(piece));
+
+        // Transpose matrix
+        for (let y = 0; y < newPiece.shape.length; ++y) {
+            for (let x = 0; x < y; ++x) {
+                [newPiece.shape[x][y], newPiece.shape[y][x]] = [newPiece.shape[y][x], newPiece.shape[x][y]];
+            }
+        }
+
+        // Reverse the order of the columns
+        newPiece.shape.forEach(row => row.reverse());
+        return newPiece;
+    }
 }

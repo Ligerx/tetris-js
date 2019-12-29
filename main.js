@@ -13,6 +13,7 @@ function play() {
         [KEY.LEFT]: piece => ({ ...piece, x: piece.x - 1 }),
         [KEY.RIGHT]: piece => ({ ...piece, x: piece.x + 1 }),
         [KEY.DOWN]: piece => ({ ...piece, y: piece.y + 1 }),
+        [KEY.UP]: piece => board.rotate(piece),
         [KEY.SPACE]: piece => ({ ...piece, y: piece.y + 1 })
     }
     
@@ -33,9 +34,9 @@ function play() {
                 while (board.valid(piece)) {
                     board.piece.move(piece);
                     piece = moves[KEY.DOWN](board.piece);
-                    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-                    board.piece.draw();
                 }
+                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                board.piece.draw();
             }
             else if (board.valid(piece)) {
                 board.piece.move(piece);
