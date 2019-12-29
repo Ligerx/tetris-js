@@ -12,7 +12,9 @@ function play() {
     const moves = {
         [KEY.LEFT]: piece => ({ ...piece, x: piece.x - 1 }),
         [KEY.RIGHT]: piece => ({ ...piece, x: piece.x + 1 }),
-        [KEY.DOWN]: piece => ({ ...piece, y: piece.y + 1 })
+        [KEY.DOWN]: piece => ({ ...piece, y: piece.y + 1 }),
+        // TODO: make this hard drop immediately drop down as far as possible
+        [KEY.SPACE]: piece => ({ ...piece, y: piece.y + 1 })
     }
     
     const board = new Board();
