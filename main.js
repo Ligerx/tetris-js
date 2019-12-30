@@ -40,36 +40,21 @@ function validPosition(piece, board) {
     });
 }
 
-function _isNotOccupied(cellValue) {
-    return cellValue === 0;
+function _isAboveFloor(y) {
+    return y < ROWS;
 }
 
 function _isInsideWalls(x) {
     return x >= 0 && x < COLS;
 }
 
-function _isAboveFloor(y) {
-    return y < ROWS;
-}
-
-function nextGameTick() {
-    const droppedPiece = piece.clone().drop();
-
-    if (validPosition(droppedPiece, board)) {
-        piece = droppedPiece;
-    }
-    else {
-        board.commitPiece(piece);
-        piece = new Piece();
-
-        // check if there are any full horizontal lines
-        // scoring
-    }
+function _isNotOccupied(cellValue) {
+    return cellValue === 0;
 }
 
 function getKeyByValue(object, value) {
     return Object.keys(object).find(key => object[key] === value);
-  }
+}
 
 function addEventListener() {
     document.addEventListener('keydown', event => {
@@ -81,7 +66,7 @@ function addEventListener() {
             // Passing in board to all functions even if they don't need it to simplify code
             const newPiece = actions[actionCode](piece, board);
 
-            if (validPosition(piece, board)) {
+            if (validPosition(newPiece, board)) {
                 piece = newPiece;
             }
         }
@@ -111,23 +96,33 @@ function draw(piece, board, ctx) {
 }
 
 const time = { start: 0, elapsed: 0, level: 1000};
+
+function nextGameTick(now) {
+    time.elapsed = now - time.start;
+
+    if (time.elapsed > time.level) {
+        time.start = now;
+
+        const droppedPiece = piece.clone().drop();
+
+        if (validPosition(droppedPiece, board)) {
+            piece = droppedPiece;
+        }
+        else {
+            board.commitPiece(piece);
+            piece = new Piece();
+    
+            // check if there are any full horizontal lines
+            // scoring
+        }
+    }
+}
+
 let requestId;
 
 function animate(now = 0) {
-    time.elapsed = now - time.start;
-
-    // TODO check valid move
-    // TODO commit the piece and generate new piece once it touches the bottom
-    // piece.drop();
-
-    // if (time.elapsed > time.level) {
-    //     time.start = now;
-    //     board.drop();
-    // }
-    // TODO: Levels and points
-
     draw(piece, board, ctx);
-    nextGameTick();
+    nextGameTick(now);
 
     requestId = requestAnimationFrame(animate);
 }
