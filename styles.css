@@ -2,9 +2,17 @@
     font-family: 'Press Start 2P', cursive;
 }
 
+body {
+    min-height: 100vh;
+    margin: 0;
+}
+
 .grid {
+    height: 100vh;
     display: grid;
     grid-template-columns: 320px 200px;
+    justify-content: center;
+    align-content: center;
 }
 
 .right-column {
