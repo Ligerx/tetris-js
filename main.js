@@ -8,8 +8,16 @@ ctx.canvas.height = ROWS * BLOCK_SIZE;
 // Scale the blocks so they have a size of 1
 ctx.scale(BLOCK_SIZE, BLOCK_SIZE);
 
+// Repeat for the next block
+const canvasNext = document.getElementById('next');
+const ctxNext = canvasNext.getContext('2d'); // Size canvas for four blocks.
+ctxNext.canvas.width = 4 * BLOCK_SIZE;
+ctxNext.canvas.height = 4 * BLOCK_SIZE;
+ctxNext.scale(BLOCK_SIZE, BLOCK_SIZE);
+
 const board = new Board();
 let piece;
+let nextPiece;
 
 const accountObj = {
     score: 0,
@@ -114,6 +122,7 @@ function handleKeyDown(event) {
 function draw(piece, board, ctx) {
     // Clear board before drawing new state
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    ctxNext.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
     // Draw board
     board.grid.forEach((row, y) => {
@@ -129,6 +138,15 @@ function draw(piece, board, ctx) {
             if (value === 0) return;
             ctx.fillStyle = COLORS[value];
             ctx.fillRect(piece.x + x, piece.y + y, 1, 1);
+        });
+    });
+
+    // Draw next piece
+    nextPiece.shape.forEach((row, y) => {
+        row.forEach((value, x) => {
+            if (value === 0) return;
+            ctxNext.fillStyle = COLORS[value];
+            ctxNext.fillRect(x, y, 1, 1);
         });
     });
 }
@@ -157,7 +175,8 @@ function nextGameTick(now) {
                 account.score += points * (account.level + 1);
                 account.lines += numCleared;
             });
-            piece = new Piece();
+            piece = nextPiece;
+            nextPiece = new Piece();
 
             if (account.lines >= LINES_PER_LEVEL * (account.level + 1)) {
                 account.level += 1;
@@ -202,6 +221,7 @@ function play() {
 
     board.reset();
     piece = new Piece();
+    nextPiece = new Piece();
     resetAccount();
 
     setupEventListener();
