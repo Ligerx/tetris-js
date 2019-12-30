@@ -110,9 +110,8 @@ function nextGameTick(now) {
         }
         else {
             board.commitPiece(piece);
+            board.clearLines();
             piece = new Piece();
-    
-            // check if there are any full horizontal lines
             // scoring
         }
     }
