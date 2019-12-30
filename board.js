@@ -20,12 +20,19 @@ class Board {
         });
     }
 
-    clearLines() {
+    clearLines(callback) {
+        let numCleared = 0;
+
         this.grid.forEach((row, y) => {
             if (row.every(value => value > 0)) {
                 this.grid.splice(y, 1);
                 this.grid.unshift(Array(COLS).fill(0));
+                numCleared += 1;
             }
         });
+
+        if (typeof callback === 'function') {
+            callback(numCleared);
+        };
     }
 }

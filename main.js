@@ -11,20 +11,44 @@ ctx.scale(BLOCK_SIZE, BLOCK_SIZE);
 const board = new Board();
 let piece;
 
+const accountObj = {
+    score: 0,
+    lines: 0
+};
+
+function updateAccountUI(key, value) {
+    let element = document.getElementById(key);
+    if (element != null) {
+        element.textContent = value;
+    }
+}
+
+const account = new Proxy(accountObj, {
+    set(target, key, value) {
+        target[key] = value;
+        updateAccountUI(key, value);
+        return true;
+    }
+});
+
 // Generate a new piece to check for a valid position before replacing the existing piece
 const actions = {
     [ACTIONS.LEFT]: piece => piece.clone().moveLeft(),
     [ACTIONS.RIGHT]: piece => piece.clone().moveRight(),
-    [ACTIONS.DROP]: piece => piece.clone().drop(),
+    [ACTIONS.DROP]: piece => {
+        account.score += POINTS.SOFT_DROP;
+        return piece.clone().drop()
+    },
     [ACTIONS.ROTATE]: piece => piece.clone().rotate(),
     [ACTIONS.HARD_DROP]: (piece, board) => {
         let nextValidPiece = piece.clone();
-        let nextTempPiece = piece.clone();
+        let nextTempPiece = piece.clone().drop();
 
-        do {
+        while(validPosition(nextTempPiece, board)) {
+            account.score += POINTS.HARD_DROP;
             nextValidPiece = nextTempPiece;
             nextTempPiece = nextTempPiece.clone().drop();
-        } while(validPosition(nextTempPiece, board));
+        };
 
         return nextValidPiece;
     }
@@ -111,14 +135,26 @@ function nextGameTick(now) {
 
         if (validPosition(droppedPiece, board)) {
             piece = droppedPiece;
+            account.score += POINTS.SOFT_DROP;
         }
         else {
             board.commitPiece(piece);
-            board.clearLines();
+            board.clearLines(numCleared => {
+                const points = linesClearedToPoints(numCleared);
+                account.score += points;
+                account.lines += numCleared;
+            });
             piece = new Piece();
-            // scoring
         }
     }
+}
+
+function linesClearedToPoints(lines) {
+    return lines === 1 ? POINTS.SINGLE :
+        lines === 2 ? POINTS.DOUBLE :  
+        lines === 3 ? POINTS.TRIPLE :     
+        lines === 4 ? POINTS.TETRIS : 
+        0;
 }
 
 let requestId;
