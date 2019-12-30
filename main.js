@@ -18,11 +18,15 @@ const actions = {
     [ACTIONS.DROP]: piece => piece.clone().drop(),
     [ACTIONS.ROTATE]: piece => piece.clone().rotate(),
     [ACTIONS.HARD_DROP]: (piece, board) => {
-        const newPiece = piece.clone();
-        while(validPosition(newPiece, board)) {
-            newPiece.drop();
-        }
-        return newPiece;
+        let nextValidPiece = piece.clone();
+        let nextTempPiece = piece.clone();
+
+        do {
+            nextValidPiece = nextTempPiece;
+            nextTempPiece = nextTempPiece.clone().drop();
+        } while(validPosition(nextTempPiece, board));
+
+        return nextValidPiece;
     }
 }
 
