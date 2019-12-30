@@ -67,10 +67,13 @@ function nextGameTick() {
     }
 }
 
+function getKeyByValue(object, value) {
+    return Object.keys(object).find(key => object[key] === value);
+  }
+
 function addEventListener() {
     document.addEventListener('keydown', event => {
-        const key = KEY[event.keyCode];
-        const actionCode = KEY_ACTION_DICTIONARY[key];
+        const actionCode = KEY_ACTION_DICTIONARY[event.keyCode];
 
         if (actionCode != null) {
             event.preventDefault();
