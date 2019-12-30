@@ -52,6 +52,21 @@ function _isAboveFloor(y) {
     return y < ROWS;
 }
 
+function nextGameTick() {
+    const droppedPiece = piece.clone().drop();
+
+    if (validPosition(droppedPiece, board)) {
+        piece = droppedPiece;
+    }
+    else {
+        board.commitPiece(piece);
+        piece = new Piece();
+
+        // check if there are any full horizontal lines
+        // scoring
+    }
+}
+
 function addEventListener() {
     document.addEventListener('keydown', event => {
         const key = KEY[event.keyCode];
@@ -85,6 +100,7 @@ function draw(piece, board, ctx) {
     // Draw piece
     piece.shape.forEach((row, y) => {
         row.forEach((value, x) => {
+            if (value === 0) return;
             ctx.fillStyle = COLORS[value];
             ctx.fillRect(piece.x + x, piece.y + y, 1, 1);
         });
@@ -108,6 +124,7 @@ function animate(now = 0) {
     // TODO: Levels and points
 
     draw(piece, board, ctx);
+    nextGameTick();
 
     requestId = requestAnimationFrame(animate);
 }
@@ -116,6 +133,6 @@ function play() {
     board.reset();
     piece = new Piece();
     addEventListener();
-    // animate();
-    draw(piece, board, ctx);
+
+    animate();
 }
