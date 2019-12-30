@@ -19,19 +19,19 @@ const board = new Board();
 let piece;
 let nextPiece;
 
+const time = { start: 0, elapsed: 0, level: LEVEL[0]};
+
+let isPlaying = false;
+let requestId;
+
+// object that will be proxied
 const accountObj = {
     score: 0,
     lines: 0,
     level: 0
 };
 
-function updateAccountUI(key, value) {
-    let element = document.getElementById(key);
-    if (element != null) {
-        element.textContent = value;
-    }
-}
-
+// proxied object. use this.
 const account = new Proxy(accountObj, {
     set(target, key, value) {
         target[key] = value;
@@ -40,10 +40,11 @@ const account = new Proxy(accountObj, {
     }
 });
 
-function resetAccount() {
-    account.score = 0;
-    account.lines = 0;
-    account.level = 0;
+function updateAccountUI(key, value) {
+    let element = document.getElementById(key);
+    if (element != null) {
+        element.textContent = value;
+    }
 }
 
 // Generate a new piece to check for a valid position before replacing the existing piece
@@ -69,40 +70,42 @@ const actions = {
     }
 }
 
-function validPosition(piece, board) {
-    return piece.shape.every((row, dy) => {
-        return row.every((value, dx) => {
-            let x = piece.x + dx;
-            let y = piece.y + dy;
+///////////////////////////////////////////////////////////////////////////////////////////////////
 
-            return (
-                value === 0 || 
-                (_isInsideWalls(x) && _isAboveFloor(y) && _isNotOccupied(board.grid[y][x]))
-            );
-        });
-    });
+function play() {
+    isPlaying = true;
+
+    board.reset();
+    piece = new Piece();
+    nextPiece = new Piece();
+    resetAccount();
+
+    setupEventListener();
+
+    animate();
 }
 
-function _isAboveFloor(y) {
-    return y < ROWS;
-}
-
-function _isInsideWalls(x) {
-    return x >= 0 && x < COLS;
-}
-
-function _isNotOccupied(cellValue) {
-    return cellValue === 0;
-}
-
-function getKeyByValue(object, value) {
-    return Object.keys(object).find(key => object[key] === value);
+function resetAccount() {
+    account.score = 0;
+    account.lines = 0;
+    account.level = 0;
 }
 
 function setupEventListener() {
     document.removeEventListener('keydown', handleKeyDown); // cleanup
     document.addEventListener('keydown', handleKeyDown);
 }
+
+function animate(now = 0) {
+    draw(piece, board, ctx);
+    nextGameTick(now);
+
+    if (isPlaying) {
+        requestId = window.requestAnimationFrame(animate);
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
 
 function handleKeyDown(event) {
     const actionCode = KEY_ACTION_DICTIONARY[event.keyCode];
@@ -151,8 +154,6 @@ function draw(piece, board, ctx) {
     });
 }
 
-const time = { start: 0, elapsed: 0, level: LEVEL[0]};
-
 function nextGameTick(now) {
     time.elapsed = now - time.start;
 
@@ -186,26 +187,6 @@ function nextGameTick(now) {
     }
 }
 
-function linesClearedToPoints(lines) {
-    return lines === 1 ? POINTS.SINGLE :
-        lines === 2 ? POINTS.DOUBLE :  
-        lines === 3 ? POINTS.TRIPLE :     
-        lines === 4 ? POINTS.TETRIS : 
-        0;
-}
-
-let isPlaying = false;
-let requestId;
-
-function animate(now = 0) {
-    draw(piece, board, ctx);
-    nextGameTick(now);
-
-    if (isPlaying) {
-        requestId = window.requestAnimationFrame(animate);
-    }
-}
-
 function gameOver() {
     isPlaying = false;
     window.cancelAnimationFrame(requestId);
@@ -216,15 +197,36 @@ function gameOver() {
     ctx.fillText('GAME OVER', 1.2, 4);
 }
 
-function play() {
-    isPlaying = true;
+function validPosition(piece, board) {
+    return piece.shape.every((row, dy) => {
+        return row.every((value, dx) => {
+            let x = piece.x + dx;
+            let y = piece.y + dy;
 
-    board.reset();
-    piece = new Piece();
-    nextPiece = new Piece();
-    resetAccount();
+            return (
+                value === 0 || 
+                (_isInsideWalls(x) && _isAboveFloor(y) && _isNotOccupied(board.grid[y][x]))
+            );
+        });
+    });
+}
 
-    setupEventListener();
+function _isAboveFloor(y) {
+    return y < ROWS;
+}
 
-    animate();
+function _isInsideWalls(x) {
+    return x >= 0 && x < COLS;
+}
+
+function _isNotOccupied(cellValue) {
+    return cellValue === 0;
+}
+
+function linesClearedToPoints(lines) {
+    return lines === 1 ? POINTS.SINGLE :
+        lines === 2 ? POINTS.DOUBLE :  
+        lines === 3 ? POINTS.TRIPLE :     
+        lines === 4 ? POINTS.TETRIS : 
+        0;
 }
