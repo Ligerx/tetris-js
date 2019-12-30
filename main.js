@@ -162,6 +162,7 @@ function nextGameTick(now) {
 
         const droppedPiece = piece.clone().drop();
 
+
         if (validPosition(droppedPiece, board)) {
             piece = droppedPiece;
             account.score += POINTS.SOFT_DROP;
