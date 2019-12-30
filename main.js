@@ -13,7 +13,8 @@ let piece;
 
 const accountObj = {
     score: 0,
-    lines: 0
+    lines: 0,
+    level: 0
 };
 
 function updateAccountUI(key, value) {
@@ -30,6 +31,12 @@ const account = new Proxy(accountObj, {
         return true;
     }
 });
+
+function resetAccount() {
+    account.score = 0;
+    account.lines = 0;
+    account.level = 0;
+}
 
 // Generate a new piece to check for a valid position before replacing the existing piece
 const actions = {
@@ -84,21 +91,24 @@ function getKeyByValue(object, value) {
     return Object.keys(object).find(key => object[key] === value);
 }
 
-function addEventListener() {
-    document.addEventListener('keydown', event => {
-        const actionCode = KEY_ACTION_DICTIONARY[event.keyCode];
+function setupEventListener() {
+    document.removeEventListener('keydown', handleKeyDown); // cleanup
+    document.addEventListener('keydown', handleKeyDown);
+}
 
-        if (actionCode != null) {
-            event.preventDefault();
+function handleKeyDown(event) {
+    const actionCode = KEY_ACTION_DICTIONARY[event.keyCode];
 
-            // Passing in board to all functions even if they don't need it to simplify code
-            const newPiece = actions[actionCode](piece, board);
+    if (actionCode != null) {
+        event.preventDefault();
 
-            if (validPosition(newPiece, board)) {
-                piece = newPiece;
-            }
+        // Passing in board to all functions even if they don't need it to simplify code
+        const newPiece = actions[actionCode](piece, board);
+
+        if (validPosition(newPiece, board)) {
+            piece = newPiece;
         }
-    });
+    }
 }
 
 function draw(piece, board, ctx) {
@@ -123,7 +133,7 @@ function draw(piece, board, ctx) {
     });
 }
 
-const time = { start: 0, elapsed: 0, level: 1000};
+const time = { start: 0, elapsed: 0, level: LEVEL[0]};
 
 function nextGameTick(now) {
     time.elapsed = now - time.start;
@@ -137,14 +147,22 @@ function nextGameTick(now) {
             piece = droppedPiece;
             account.score += POINTS.SOFT_DROP;
         }
+        else if (piece.y <= 1) {
+            gameOver();
+        }
         else {
             board.commitPiece(piece);
             board.clearLines(numCleared => {
                 const points = linesClearedToPoints(numCleared);
-                account.score += points;
+                account.score += points * (account.level + 1);
                 account.lines += numCleared;
             });
             piece = new Piece();
+
+            if (account.lines >= LINES_PER_LEVEL * (account.level + 1)) {
+                account.level += 1;
+                time.level = LEVEL[account.level];
+            }
         }
     }
 }
@@ -157,19 +175,36 @@ function linesClearedToPoints(lines) {
         0;
 }
 
+let isPlaying = false;
 let requestId;
 
 function animate(now = 0) {
     draw(piece, board, ctx);
     nextGameTick(now);
 
-    requestId = requestAnimationFrame(animate);
+    if (isPlaying) {
+        requestId = window.requestAnimationFrame(animate);
+    }
+}
+
+function gameOver() {
+    isPlaying = false;
+    window.cancelAnimationFrame(requestId);
+    ctx.fillStyle = 'black';
+    ctx.fillRect(0, 3, 10, 1.2);
+    ctx.font = '1px Arial';
+    ctx.fillStyle = 'red';
+    ctx.fillText('GAME OVER', 1.2, 4);
 }
 
 function play() {
+    isPlaying = true;
+
     board.reset();
     piece = new Piece();
-    addEventListener();
+    resetAccount();
+
+    setupEventListener();
 
     animate();
 }
