@@ -40,7 +40,7 @@ class Piece {
 
     rotate() {
         // Deep clone the shape so we can mutate the 2d array
-        let newShape = JSON.parse(JSON.stringify(piece));
+        let newShape = JSON.parse(JSON.stringify(this.shape));
 
         // Transpose matrix
         for (let y = 0; y < newShape.length; ++y) {
