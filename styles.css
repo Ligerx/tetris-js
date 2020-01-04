@@ -31,3 +31,9 @@ body {
     padding: 15px 30px;
     cursor: pointer;
 }
+
+#github-btn {
+    position: 'fixed';
+    bottom: 24px;
+    right: 24px;
+}
