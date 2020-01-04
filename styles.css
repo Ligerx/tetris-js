@@ -33,7 +33,7 @@ body {
 }
 
 #github-btn {
-    position: 'fixed';
+    position: fixed;
     bottom: 24px;
     right: 24px;
 }
